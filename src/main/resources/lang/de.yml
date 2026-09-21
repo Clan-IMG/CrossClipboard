@@ -1,0 +1,26 @@
+# Nachrichten nutzen MiniMessage: https://docs.advntr.dev/minimessage/format.html
+# <Platzhalter> werden vom Plugin gefüllt - bitte unverändert lassen.
+
+prefix: "<dark_gray>[<aqua>CrossClipboard</aqua>]</dark_gray> "
+
+restored: "<green>Clipboard von <yellow><server></yellow> geladen: <yellow><blocks></yellow> Blöcke (<yellow><size></yellow>). Nutze <white>//paste</white>."
+pushed: "<green>Clipboard für deine anderen Server gespeichert: <yellow><blocks></yellow> Blöcke, <yellow><bytes></yellow>."
+nothing-to-push: "<red>Du hast noch kein Clipboard. Nutze zuerst <white>//copy</white>."
+nothing-stored: "<yellow>Für dich ist kein synchronisiertes Clipboard gespeichert."
+too-large: "<red>Dein Clipboard ist zu groß zum Synchronisieren (Limit: <yellow><limit></yellow>). Kopiere einen kleineren Bereich."
+cleared: "<green>Dein gespeichertes Clipboard wurde gelöscht."
+
+status-local: "<gray>Auf diesem Server: <white>du hast ein Clipboard</white>"
+status-no-local: "<gray>Auf diesem Server: <white>kein Clipboard</white>"
+status-stored: "<gray>Gespeichert: <white><blocks></white> Blöcke (<white><size></white>, <white><bytes></white>) von <white><server></white>, vor <white><age></white> gespeichert, läuft ab in <white><expires></white>"
+status-none: "<gray>Gespeichert: <white>nichts</white>"
+
+store-error: "<red>Der Clipboard-Speicher ist gerade nicht erreichbar. Versuche es gleich nochmal und melde es einem Admin, falls es bleibt."
+process-error: "<red>Dein Clipboard konnte nicht verarbeitet werden: <reason>"
+
+usage: "<gray>Benutzung: <white>/<command> <status|push|pull|clear></white>"
+usage-admin: "<gray>Benutzung: <white>/<command> <status|push|pull|clear|reload></white>"
+players-only: "<red>Das kann nur ein Spieler nutzen."
+no-permission: "<red>Dafür hast du keine Berechtigung."
+reloaded: "<green>Konfiguration neu geladen."
+restart-required: "<yellow>Die Redis-Einstellungen wurden geändert. Starte den Server neu, um sie zu übernehmen."

@@ -1,11 +1,28 @@
 name: CrossClipboard
-description: $description
-prefix: [ CrossClipboard ]
+description: "$description"
+prefix: CrossClipboard
 version: '${version}'
 
 main: net.clanimg.crossClipboard.CrossClipboard
 api-version: '1.21.11'
 load: POSTWORLD
 
+# FAWE is preferred, plain WorldEdit works as a fallback. Listing both makes sure we load after whichever exists.
+softdepend: [ FastAsyncWorldEdit, WorldEdit ]
+
 authors: [ WrobelXXL ]
 website: https://clan-img.net
+
+commands:
+  crossclipboard:
+    description: Manage the clipboard that follows you between servers
+    usage: /<command> <status|push|pull|clear>
+    aliases: [ cc ]
+
+permissions:
+  crossclipboard.use:
+    description: Have your clipboard follow you between servers, and use the /crossclipboard commands
+    default: true
+  crossclipboard.admin:
+    description: Reload the CrossClipboard configuration
+    default: op

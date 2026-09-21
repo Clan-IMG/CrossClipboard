@@ -1,0 +1,26 @@
+# Messages use MiniMessage: https://docs.advntr.dev/minimessage/format.html
+# <placeholders> are filled in by the plugin - keep them as they are.
+
+prefix: "<dark_gray>[<aqua>CrossClipboard</aqua>]</dark_gray> "
+
+restored: "<green>Clipboard from <yellow><server></yellow> loaded: <yellow><blocks></yellow> blocks (<yellow><size></yellow>). Use <white>//paste</white>."
+pushed: "<green>Clipboard saved for your other servers: <yellow><blocks></yellow> blocks, <yellow><bytes></yellow>."
+nothing-to-push: "<red>You have no clipboard yet. Use <white>//copy</white> first."
+nothing-stored: "<yellow>No synced clipboard is stored for you."
+too-large: "<red>Your clipboard is too large to sync (limit: <yellow><limit></yellow>). Copy a smaller area."
+cleared: "<green>Your stored clipboard was deleted."
+
+status-local: "<gray>On this server: <white>you have a clipboard</white>"
+status-no-local: "<gray>On this server: <white>no clipboard</white>"
+status-stored: "<gray>Stored: <white><blocks></white> blocks (<white><size></white>, <white><bytes></white>) from <white><server></white>, saved <white><age></white> ago, expires in <white><expires></white>"
+status-none: "<gray>Stored: <white>nothing</white>"
+
+store-error: "<red>The clipboard store is not reachable right now. Try again shortly; tell an admin if it keeps happening."
+process-error: "<red>Your clipboard could not be processed: <reason>"
+
+usage: "<gray>Usage: <white>/<command> <status|push|pull|clear></white>"
+usage-admin: "<gray>Usage: <white>/<command> <status|push|pull|clear|reload></white>"
+players-only: "<red>Only players can use this."
+no-permission: "<red>You do not have permission for that."
+reloaded: "<green>Configuration reloaded."
+restart-required: "<yellow>The Redis settings changed. Restart the server to apply them."
