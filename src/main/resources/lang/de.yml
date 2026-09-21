@@ -1,26 +1,27 @@
 # Nachrichten nutzen MiniMessage: https://docs.advntr.dev/minimessage/format.html
 # <Platzhalter> werden vom Plugin gefüllt - bitte unverändert lassen.
+# Farben: Grau ist der Haupttext, Aqua hebt Werte und Befehle hervor.
 
 prefix: "<dark_gray>[<aqua>CrossClipboard</aqua>]</dark_gray> "
 
-restored: "<green>Clipboard von <yellow><server></yellow> geladen: <yellow><blocks></yellow> Blöcke (<yellow><size></yellow>). Nutze <white>//paste</white>."
-pushed: "<green>Clipboard für deine anderen Server gespeichert: <yellow><blocks></yellow> Blöcke, <yellow><bytes></yellow>."
-nothing-to-push: "<red>Du hast noch kein Clipboard. Nutze zuerst <white>//copy</white>."
-nothing-stored: "<yellow>Für dich ist kein synchronisiertes Clipboard gespeichert."
-too-large: "<red>Dein Clipboard ist zu groß zum Synchronisieren (Limit: <yellow><limit></yellow>). Kopiere einen kleineren Bereich."
-cleared: "<green>Dein gespeichertes Clipboard wurde gelöscht."
+restored: "<gray>Clipboard von <aqua><server></aqua> geladen: <aqua><blocks></aqua> Blöcke (<aqua><size></aqua>). Nutze <aqua>//paste</aqua>."
+pushed: "<gray>Clipboard für deine anderen Server gespeichert: <aqua><blocks></aqua> Blöcke, <aqua><bytes></aqua>."
+nothing-to-push: "<gray>Du hast noch kein Clipboard. Nutze zuerst <aqua>//copy</aqua>."
+nothing-stored: "<gray>Für dich ist kein synchronisiertes Clipboard gespeichert."
+too-large: "<gray>Dein Clipboard ist zu groß zum Synchronisieren (Limit: <aqua><limit></aqua>). Kopiere einen kleineren Bereich."
+cleared: "<gray>Dein gespeichertes Clipboard wurde gelöscht."
 
-status-local: "<gray>Auf diesem Server: <white>du hast ein Clipboard</white>"
-status-no-local: "<gray>Auf diesem Server: <white>kein Clipboard</white>"
-status-stored: "<gray>Gespeichert: <white><blocks></white> Blöcke (<white><size></white>, <white><bytes></white>) von <white><server></white>, vor <white><age></white> gespeichert, läuft ab in <white><expires></white>"
-status-none: "<gray>Gespeichert: <white>nichts</white>"
+status-local: "<gray>Auf diesem Server: <aqua>du hast ein Clipboard</aqua>"
+status-no-local: "<gray>Auf diesem Server: <aqua>kein Clipboard</aqua>"
+status-stored: "<gray>Gespeichert: <aqua><blocks></aqua> Blöcke (<aqua><size></aqua>, <aqua><bytes></aqua>) von <aqua><server></aqua>, vor <aqua><age></aqua> gespeichert, läuft ab in <aqua><expires></aqua>"
+status-none: "<gray>Gespeichert: <aqua>nichts</aqua>"
 
-store-error: "<red>Der Clipboard-Speicher ist gerade nicht erreichbar. Versuche es gleich nochmal und melde es einem Admin, falls es bleibt."
-process-error: "<red>Dein Clipboard konnte nicht verarbeitet werden: <reason>"
+store-error: "<gray>Der Clipboard-Speicher ist gerade nicht erreichbar. Versuche es gleich nochmal und melde es einem Admin, falls es bleibt."
+process-error: "<gray>Dein Clipboard konnte nicht verarbeitet werden: <aqua><reason></aqua>"
 
-usage: "<gray>Benutzung: <white>/<command> <status|push|pull|clear></white>"
-usage-admin: "<gray>Benutzung: <white>/<command> <status|push|pull|clear|reload></white>"
-players-only: "<red>Das kann nur ein Spieler nutzen."
-no-permission: "<red>Dafür hast du keine Berechtigung."
-reloaded: "<green>Konfiguration neu geladen."
-restart-required: "<yellow>Die Redis-Einstellungen wurden geändert. Starte den Server neu, um sie zu übernehmen."
+usage: "<gray>Benutzung: <aqua>/<command> <status|push|pull|clear></aqua>"
+usage-admin: "<gray>Benutzung: <aqua>/<command> <status|push|pull|clear|reload></aqua>"
+players-only: "<gray>Das kann nur ein Spieler nutzen."
+no-permission: "<gray>Dafür hast du keine Berechtigung."
+reloaded: "<gray>Konfiguration neu geladen."
+restart-required: "<gray>Die Redis-Einstellungen wurden geändert. Starte den Server neu, um sie zu übernehmen."
