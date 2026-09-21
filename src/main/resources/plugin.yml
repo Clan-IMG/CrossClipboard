@@ -1,0 +1,11 @@
+name: CrossClipboard
+description: $description
+prefix: [ CrossClipboard ]
+version: '${version}'
+
+main: net.clanimg.crossClipboard.CrossClipboard
+api-version: '1.21.11'
+load: POSTWORLD
+
+authors: [ WrobelXXL ]
+website: https://clan-img.net
