@@ -60,7 +60,8 @@ class HandoffCoordinatorTest {
         Node(String name, Duration timeout) {
             this.name = name;
             this.coordinator = new HandoffCoordinator(channel, name, () -> timeout, scheduler, Runnable::run,
-                    Logger.getLogger("test"));
+                    Logger.getLogger("test"), message -> {
+                    });
             coordinators.add(coordinator);
         }
 
@@ -243,7 +244,8 @@ class HandoffCoordinatorTest {
         ExecutorService worker = Executors.newSingleThreadExecutor();
         try {
             HandoffCoordinator coordinator = new HandoffCoordinator(channel, "A", () -> Duration.ofSeconds(30),
-                    scheduler, worker, Logger.getLogger("test"));
+                    scheduler, worker, Logger.getLogger("test"), message -> {
+                    });
             coordinators.add(coordinator);
             CountDownLatch loaded = new CountDownLatch(1);
 

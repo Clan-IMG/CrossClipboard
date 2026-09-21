@@ -92,8 +92,8 @@ public final class SyncService {
         }
         UUID id = player.getUniqueId();
         tracked.add(id);
-        ClipboardHolder atJoin = holderOf(player);
-        handoff.onJoin(id, () -> restore(id, atJoin));
+        debug("join " + player.getName());
+        handoff.onJoin(id, () -> restore(id));
     }
 
     /**
@@ -131,17 +131,36 @@ public final class SyncService {
     }
 
     /** Worker thread: loads the stored clipboard once the handoff says it is safe. */
-    private void restore(UUID id, ClipboardHolder atJoin) {
+    private void restore(UUID id) {
         try {
             Optional<StoredClipboard.Meta> stored = store.meta(id);
             if (stored.isEmpty()) {
+                debug("restore " + id + ": nothing is stored");
                 return;
             }
             Synced mark = synced.get(id);
             long version = stored.get().version();
+            String origin = stored.get().server();
+            ClipboardHolder[] seen = new ClipboardHolder[1];
             boolean proceed = onMain(() -> {
                 Player player = Bukkit.getPlayer(id);
-                return player != null && SyncPolicy.shouldRestore(holderOf(player), atJoin, mark, version);
+                if (player == null) {
+                    debug("restore " + id + ": player is gone");
+                    return false;
+                }
+                ClipboardHolder current = holderOf(player);
+                seen[0] = current;
+                boolean restore = SyncPolicy.shouldRestore(current, mark, version);
+                if (!restore) {
+                    // What is in the session is the copy the store holds, so it counts as synced: it is only
+                    // uploaded again if the player copies or transforms something new.
+                    synced.put(id, Synced.of(version, current, codec.transformOf(current)));
+                }
+                debug("restore " + player.getName() + ": stored v" + version + " from " + origin
+                        + "; session clipboard " + (current == null ? "none" : "present")
+                        + ", last synced here v" + (mark == null ? "-" : mark.version())
+                        + " -> " + (restore ? "restoring" : "keeping the clipboard already there"));
+                return restore;
             });
             if (!proceed) {
                 return;
@@ -153,7 +172,7 @@ public final class SyncService {
             }
             StoredClipboard.Meta meta = clipboard.get().meta();
             ClipboardHolder holder = codec.decode(clipboard.get().data(), meta.format(), meta.transform());
-            onMain(() -> apply(id, atJoin, false, holder, meta));
+            onMain(() -> apply(id, seen[0], false, holder, meta));
         } catch (Exception e) {
             log.log(Level.WARNING, "Could not restore the clipboard of " + id, e);
         }
@@ -162,11 +181,18 @@ public final class SyncService {
     /** Main thread: serializes what the player leaves behind, unless the store already has exactly that. */
     private Prepared prepareForQuit(UUID id, String name, Player player) {
         Snapshot snapshot = capture(player);
-        if (snapshot == null || SyncPolicy.alreadySynced(synced.get(id), snapshot.holder(), snapshot.transform())) {
+        if (snapshot == null) {
+            debug("quit " + name + ": no clipboard, nothing to upload");
+            return null;
+        }
+        if (SyncPolicy.alreadySynced(synced.get(id), snapshot.holder(), snapshot.transform())) {
+            debug("quit " + name + ": clipboard unchanged since it was last synced, nothing to upload");
             return null;
         }
         try {
-            return new Prepared(snapshot, encode(snapshot));
+            Prepared prepared = new Prepared(snapshot, encode(snapshot));
+            debug("quit " + name + ": serialized " + prepared.encoded().data().length + " bytes");
+            return prepared;
         } catch (ClipboardTooLargeException e) {
             log.info("Clipboard of " + name + " is over the " + Format.bytes(e.limitBytes())
                     + " limit and was not synced");
@@ -296,24 +322,30 @@ public final class SyncService {
                 encoded.size(), encoded.data().length, snapshot.transform(), -1);
         store.save(id, new StoredClipboard(meta, encoded.data()), settings.get().ttl());
         synced.put(id, Synced.of(version, snapshot.holder(), snapshot.transform()));
+        debug("uploaded " + id + " as v" + version + " (" + encoded.data().length + " bytes)");
         return meta;
     }
 
     /**
      * Main thread. Puts a decoded clipboard into the player's session.
      *
-     * @param expected the holder the session must still have (the one seen at join), ignored when {@code force}
+     * @param expected the holder the session must still have (the one seen when restoring was decided), ignored
+     *                 when {@code force}
      */
     private boolean apply(UUID id, ClipboardHolder expected, boolean force, ClipboardHolder holder,
                           StoredClipboard.Meta meta) {
         Player player = Bukkit.getPlayer(id);
         if (player == null || (!force && holderOf(player) != expected)) {
+            debug("restore " + id + ": dropped the loaded clipboard (player gone or copied something new meanwhile)");
             discard(holder);
             return false;
         }
         WorldEdit.getInstance().getSessionManager().get(BukkitAdapter.adapt(player)).setClipboard(holder);
         synced.put(id, Synced.of(meta.version(), holder, meta.transform()));
-        if (force || settings.get().notifyOnRestore()) {
+        boolean announce = SyncPolicy.shouldAnnounce(force, settings.get().notifyOnRestore(), meta.server(), serverName());
+        debug("restore " + player.getName() + ": applied v" + meta.version() + " from " + meta.server()
+                + (announce ? ", telling the player" : ", silently"));
+        if (announce) {
             player.sendMessage(messages.get("restored", Map.of(
                     "server", meta.server(),
                     "blocks", Long.toString(meta.blocks()),
@@ -355,6 +387,12 @@ public final class SyncService {
             return task.call();
         }
         return Bukkit.getScheduler().callSyncMethod(plugin, task).get(10, TimeUnit.SECONDS);
+    }
+
+    private void debug(String message) {
+        if (settings.get().debug()) {
+            log.info("[debug] " + message);
+        }
     }
 
     private String serverName() {

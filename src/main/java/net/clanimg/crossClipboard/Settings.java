@@ -15,7 +15,8 @@ public record Settings(
         Duration handoffTimeout,
         String serverName,
         boolean notifyOnRestore,
-        String language
+        String language,
+        boolean debug
 ) {
 
     private static final long MEGABYTE = 1024L * 1024L;
@@ -58,7 +59,8 @@ public record Settings(
                 Duration.ofSeconds(handoffSeconds),
                 config.getString("server-name", "").trim(),
                 config.getBoolean("notify-on-restore", true),
-                config.getString("language", "en").trim().toLowerCase()
+                config.getString("language", "en").trim().toLowerCase(),
+                config.getBoolean("debug", false)
         );
     }
 

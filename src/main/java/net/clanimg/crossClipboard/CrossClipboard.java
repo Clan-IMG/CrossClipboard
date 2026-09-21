@@ -63,7 +63,11 @@ public final class CrossClipboard extends JavaPlugin {
 
         ClipboardCodec codec = new ClipboardCodec();
         handoff = new HandoffCoordinator(backend, instanceId, () -> settings.handoffTimeout(), scheduler, io,
-                getLogger());
+                getLogger(), message -> {
+                    if (settings.debug()) {
+                        getLogger().info("[debug] " + message);
+                    }
+                });
         sync = new SyncService(this, () -> settings, "server-" + instanceId.substring(0, 4), backend, handoff,
                 codec, messages, io);
 

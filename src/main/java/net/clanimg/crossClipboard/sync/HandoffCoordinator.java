@@ -12,6 +12,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,17 +37,20 @@ public final class HandoffCoordinator implements AutoCloseable {
     private final ScheduledExecutorService scheduler;
     private final Executor worker;
     private final Logger log;
+    private final Consumer<String> trace;
     private final Map<UUID, Pending> pending = new ConcurrentHashMap<>();
     private final AutoCloseable subscription;
 
     public HandoffCoordinator(HandoffChannel channel, String instanceId, Supplier<Duration> timeout,
-                              ScheduledExecutorService scheduler, Executor worker, Logger log) {
+                              ScheduledExecutorService scheduler, Executor worker, Logger log,
+                              Consumer<String> trace) {
         this.channel = channel;
         this.instanceId = instanceId;
         this.timeout = timeout;
         this.scheduler = scheduler;
         this.worker = worker;
         this.log = log;
+        this.trace = trace;
         this.subscription = channel.subscribe(this::onReleased);
     }
 
@@ -69,6 +73,7 @@ public final class HandoffCoordinator implements AutoCloseable {
             } catch (RuntimeException e) {
                 log.log(Level.WARNING, "Could not claim " + player + ", loading without waiting for a handoff", e);
             }
+            trace.accept("join " + player + ": claimed, previously held by " + holder);
             join.awaiting(instanceId.equals(holder) ? null : holder, timeout.get());
         });
     }
@@ -105,7 +110,9 @@ public final class HandoffCoordinator implements AutoCloseable {
         }
         try {
             // If someone else already claimed the player, they are waiting on us; otherwise nobody is.
-            if (!channel.release(player, instanceId)) {
+            boolean removed = channel.release(player, instanceId);
+            trace.accept("quit " + player + ": uploaded, " + (removed ? "nobody else holds the player" : "announcing release"));
+            if (!removed) {
                 channel.publishReleased(player, instanceId);
             }
         } catch (RuntimeException e) {
@@ -118,6 +125,7 @@ public final class HandoffCoordinator implements AutoCloseable {
             return;
         }
         Pending waiting = pending.get(player);
+        trace.accept("release of " + player + " announced by " + from + ", " + (waiting == null ? "nobody here is waiting" : "a join here is waiting"));
         if (waiting != null) {
             waiting.released(from);
         }
@@ -199,6 +207,7 @@ public final class HandoffCoordinator implements AutoCloseable {
 
         /** Timeout, or an obsolete join being superseded. */
         void fire() {
+            trace.accept("join " + player + ": wait ended without an announcement (timeout or superseded)");
             Runnable run;
             synchronized (this) {
                 if (fired) {

@@ -31,7 +31,8 @@ class SettingsTest {
         assertEquals(Duration.ofHours(24), settings.ttl());
         assertEquals(Duration.ofSeconds(5), settings.handoffTimeout());
         assertEquals("auto", settings.format());
-        assertEquals("en", settings.language());
+        assertTrue(SettingsTest.class.getResource("/lang/" + settings.language() + ".yml") != null,
+                "the shipped default language '" + settings.language() + "' has no bundled language file");
         assertTrue(settings.notifyOnRestore());
     }
 

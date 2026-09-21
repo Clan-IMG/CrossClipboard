@@ -4,14 +4,19 @@
 # Redis, and give each server the same FAWE/WorldEdit version.
 
 # Language of player messages: en or de. The files live in plugins/CrossClipboard/lang/ and can be edited.
-language: en
+language: de
 
 # Name shown to players as the origin of a clipboard ("Clipboard from <name> loaded").
 # Leave empty to use an automatic name like "server-3f9a".
 server-name: ""
 
-# Tell players when a clipboard from another server was loaded for them.
+# Tell players when a clipboard from another server was loaded for them. Getting back the clipboard they copied
+# on this very server (e.g. after switching away and back) is restored silently.
 notify-on-restore: true
+
+# Log every decision the plugin takes (joins, quits, handoffs, restores) to the console. Only for finding out why
+# a clipboard did not arrive; leave off otherwise.
+debug: false
 
 redis:
   # Either set url (as printed by Coolify, e.g. redis://default:PASSWORD@host:6379/0, or rediss:// for TLS) ...

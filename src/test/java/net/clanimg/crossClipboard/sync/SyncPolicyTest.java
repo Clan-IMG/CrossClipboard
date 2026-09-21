@@ -12,31 +12,51 @@ class SyncPolicyTest {
 
     @Test
     void takesTheStoredClipboardWhenThePlayerHasNoneLocally() {
-        assertTrue(SyncPolicy.shouldRestore(null, null, null, 7));
+        assertTrue(SyncPolicy.shouldRestore(null, null, 7));
+        assertTrue(SyncPolicy.shouldRestore(null, Synced.of(7, local, null), 7), "the session was emptied");
     }
 
     @Test
-    void keepsWhatThePlayerCopiedSinceJoining() {
-        assertFalse(SyncPolicy.shouldRestore(other, null, null, 7));
-        assertFalse(SyncPolicy.shouldRestore(other, local, Synced.of(1, local, null), 7));
+    void replacesALeftoverClipboardWhenNothingWasSyncedHereBefore() {
+        // e.g. FAWE reloaded it from disk after this server restarted, so no mark survived
+        assertTrue(SyncPolicy.shouldRestore(local, null, 7));
     }
 
     @Test
-    void keepsALocalClipboardThatWasNeverSynced() {
-        assertFalse(SyncPolicy.shouldRestore(local, local, null, 7));
+    void replacesALeftoverClipboardWhenTheStoreHasMovedOn() {
+        assertTrue(SyncPolicy.shouldRestore(local, Synced.of(1, local, null), 2));
     }
 
     @Test
-    void replacesTheLocalCopyOnlyWhenTheStoreHasMovedOn() {
-        Synced mark = Synced.of(1, local, null);
-
-        assertTrue(SyncPolicy.shouldRestore(local, local, mark, 2));
-        assertFalse(SyncPolicy.shouldRestore(local, local, mark, 1), "already holds this version");
+    void replacesADiskRestoredLeftoverThatIsADifferentObjectThanWhatWeSynced() {
+        // FAWE rebuilds the holder from disk, so identity says nothing; only the version does.
+        assertTrue(SyncPolicy.shouldRestore(local, Synced.of(1, other, null), 2));
     }
 
     @Test
-    void keepsALocalClipboardThatIsNotTheOneWeSynced() {
-        assertFalse(SyncPolicy.shouldRestore(local, local, Synced.of(1, other, null), 2));
+    void keepsALeftoverClipboardWhenTheStoreStillHoldsThatVersion() {
+        assertFalse(SyncPolicy.shouldRestore(local, Synced.of(1, local, null), 1));
+        assertFalse(SyncPolicy.shouldRestore(local, Synced.of(1, other, null), 1));
+    }
+
+    @Test
+    void announcesAClipboardThatCameFromAnotherServer() {
+        assertTrue(SyncPolicy.shouldAnnounce(false, true, "build", "lobby"));
+    }
+
+    @Test
+    void staysQuietWhenTheClipboardCameFromThisServer() {
+        assertFalse(SyncPolicy.shouldAnnounce(false, true, "build", "build"));
+    }
+
+    @Test
+    void staysQuietWhenNotificationsAreOff() {
+        assertFalse(SyncPolicy.shouldAnnounce(false, false, "build", "lobby"));
+    }
+
+    @Test
+    void aManualPullAlwaysAnnounces() {
+        assertTrue(SyncPolicy.shouldAnnounce(true, false, "build", "build"));
     }
 
     @Test

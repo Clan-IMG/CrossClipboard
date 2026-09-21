@@ -13,24 +13,33 @@ final class SyncPolicy {
     }
 
     /**
-     * Whether a stored clipboard should replace what the player has locally.
+     * Whether a stored clipboard should replace what is in the player's session when their handoff completes.
      *
-     * @param current      the player's holder right now
-     * @param atJoin       the player's holder when they joined this server
-     * @param mark         what this server last synced for the player, or {@code null}
+     * <p>Whatever is there was not made this visit; it is left over from an earlier stay on this server.
+     * WorldEdit keeps sessions around for a while, and FAWE by default reloads a player's clipboard from disk on
+     * join. Such a leftover may be stale, because the player may have copied something new on another server
+     * since, so it only stays if the store still holds the very version this server last synced. (A player who
+     * copies in the fraction of a second before the handoff completes is overwritten; guarding against that would
+     * have to tell it apart from FAWE's asynchronous disk reload, which it cannot.)
+     *
+     * @param current       the player's holder right now, or {@code null}
+     * @param mark          what this server last synced for the player, or {@code null}
      * @param storedVersion version of the copy in the store
      */
-    static boolean shouldRestore(Object current, Object atJoin, Synced mark, long storedVersion) {
-        if (current != atJoin) {
-            // They copied something on this server since joining; that is newer than anything stored.
-            return false;
-        }
+    static boolean shouldRestore(Object current, Synced mark, long storedVersion) {
         if (current == null) {
             return true;
         }
-        // They arrived with a clipboard already in the session. Only replace it if it is the very copy this
-        // server synced earlier and the store has moved on since; anything else is local work we must keep.
-        return mark != null && mark.holder().get() == current && mark.version() != storedVersion;
+        return mark == null || mark.version() != storedVersion;
+    }
+
+    /**
+     * Whether to tell the player that a clipboard was loaded for them. A manual pull always says so. An automatic
+     * restore stays quiet when the clipboard came from this very server: they made it here, so "loaded from
+     * <this server>" tells them nothing.
+     */
+    static boolean shouldAnnounce(boolean manual, boolean notifyOnRestore, String origin, String thisServer) {
+        return manual || (notifyOnRestore && !origin.equals(thisServer));
     }
 
     /** Whether uploading would just store the copy that is already stored. */

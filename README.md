@@ -23,7 +23,10 @@ point them all at one Redis. The proxy (Velocity/BungeeCord) needs nothing.
   server thread at that moment (FAWE closes a leaving player's clipboard right after), so a very large clipboard
   can cause a short hitch when its owner leaves; the upload itself runs in the background. `sync.max-size-mb`
   bounds this.
-- When a player joins a server, their stored clipboard is loaded into their WorldEdit session.
+- When a player joins a server, their stored clipboard is loaded into their WorldEdit session. A clipboard already
+  in the session (FAWE keeps one per player on disk) is only replaced if the stored one is newer, so returning
+  to the server you copied on brings back the same clipboard silently, and you get a message only when the
+  clipboard came from another server.
 - Behind a proxy the new server usually sees the join *before* the old one sees the quit. The new server
   therefore waits until the old one announces that it finished uploading (over Redis pub/sub), and only then
   loads. If the old server never answers (e.g. it crashed), it loads after `handoff-timeout-seconds`.
@@ -67,6 +70,8 @@ See the commented [config.yml](src/main/resources/config.yml). The ones you will
 | `sync.ttl-hours` | `24` | How long a stored clipboard is kept |
 | `sync.handoff-timeout-seconds` | `5` | Longest a server waits for the previous one to finish uploading |
 | `language` | `en` | `en` or `de`; files in `plugins/CrossClipboard/lang/` can be edited |
+| `server-name` | empty | Name shown as the origin of a clipboard; set it to something readable on each server |
+| `debug` | `false` | Logs every join, quit, handoff and restore decision, for finding out why a clipboard did not arrive |
 
 Changing the Redis settings needs a restart; everything else applies with `/crossclipboard reload`.
 
