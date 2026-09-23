@@ -1,0 +1,27 @@
+# Nachrichten nutzen MiniMessage: https://docs.advntr.dev/minimessage/format.html
+# <Platzhalter> werden vom Plugin gefüllt - bitte unverändert lassen.
+# Farben: Grau ist der Haupttext, Aqua hebt Werte und Befehle hervor.
+
+prefix: "<dark_gray>[<aqua>CrossClipboard</aqua>]</dark_gray> "
+
+restored: "<gray>Clipboard von <aqua><server></aqua> geladen: <aqua><blocks></aqua> Blöcke (<aqua><size></aqua>). Nutze <aqua>//paste</aqua>."
+pushed: "<gray>Clipboard für deine anderen Server gespeichert: <aqua><blocks></aqua> Blöcke, <aqua><bytes></aqua>."
+nothing-to-push: "<gray>Du hast noch kein Clipboard. Nutze zuerst <aqua>//copy</aqua>."
+nothing-stored: "<gray>Für dich ist kein synchronisiertes Clipboard gespeichert."
+too-large: "<gray>Dein Clipboard ist zu groß zum Synchronisieren (Limit: <aqua><limit></aqua>). Kopiere einen kleineren Bereich."
+cleared: "<gray>Dein gespeichertes Clipboard wurde gelöscht."
+
+status-local: "<gray>Auf diesem Server: <aqua>du hast ein Clipboard</aqua>"
+status-no-local: "<gray>Auf diesem Server: <aqua>kein Clipboard</aqua>"
+status-stored: "<gray>Gespeichert: <aqua><blocks></aqua> Blöcke (<aqua><size></aqua>, <aqua><bytes></aqua>) von <aqua><server></aqua>, vor <aqua><age></aqua> gespeichert, läuft ab in <aqua><expires></aqua>"
+status-none: "<gray>Gespeichert: <aqua>nichts</aqua>"
+
+store-error: "<gray>Der Clipboard-Speicher ist gerade nicht erreichbar. Versuche es gleich nochmal und melde es einem Admin, falls es bleibt."
+process-error: "<gray>Dein Clipboard konnte nicht verarbeitet werden: <aqua><reason></aqua>"
+
+usage: "<gray>Benutzung: <aqua>/<command> <status|push|pull|clear></aqua>"
+usage-admin: "<gray>Benutzung: <aqua>/<command> <status|push|pull|clear|reload></aqua>"
+players-only: "<gray>Das kann nur ein Spieler nutzen."
+no-permission: "<gray>Dafür hast du keine Berechtigung."
+reloaded: "<gray>Konfiguration neu geladen."
+restart-required: "<gray>Die Redis-Einstellungen wurden geändert. Starte den Server neu, um sie zu übernehmen."
